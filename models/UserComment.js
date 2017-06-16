@@ -15,4 +15,4 @@ var UserCommentSchema = new Schema ({
 
 var UserComment = mongoose.model("UserComment", UserCommentSchema);
 
-mondule.exports = UserComment;
+module.exports = UserComment;
