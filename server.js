@@ -3,13 +3,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
+const path = require('path');
 // Used to scrape
 const request = require('request');
 const cheerio = require('cheerio');
 // Models
 const Article = require('./models/Article.js');
 const UserComment = require('./models/UserComment.js');
-// Mongoose set to use JavaScript Promises
+// Use ES6 Promises
 mongoose.Promise = Promise;
 
 // Initializing Express
@@ -20,9 +21,6 @@ app.use(logger('dev'));
 app.use(bodyParser.urlencoded({
   extended: false
 }));
-
-// Public is a static directory
-app.use(express.static('public'));
 
 // Configure DB with mongoose
 mongoose.connect('mongodb://localhost/articleScraper');
@@ -41,7 +39,7 @@ db.once('open', function() {
 // Routes
 
 // Get to scrape website
-app.get('/scrape', function(req, res) {
+app.get('/', function(req, res) {
   // Grabbing entire body of html with request
   request('http://www.theonion.com/', function(error, response, html) {
     // Load html body into cheerio, then save it to $ as a shorthand selector
@@ -54,6 +52,7 @@ app.get('/scrape', function(req, res) {
       // Adding headline, links, summary and saving them as properties of result object
       result.title = $(this).find('.headline').find('a').attr('title');
       result.link = $(this).find('.headline').find('a').attr('href');
+      result.summary = $(this).find('.desc').text();
 
       // Create a new entry using the Article model
       var entry = new Article(result);
@@ -67,14 +66,29 @@ app.get('/scrape', function(req, res) {
           console.log(doc);
         }
       });
-
     });
   });
-  // Tells browser scrape is complete
-  res.send("Scrape Complete");
-})
+  // Sends the index.html file
+  res.sendFile(path.join(__dirname + '/public/index.html') );
+});
+
+// Get route to display articles that were scraped and saved to the MongoDB
+app.get('/articles', function(req, res) {
+  // Find all documents saved in the Article array
+  Article.find({}, function(error, doc) {
+    if (error) {
+      console.log(error);
+    }
+    else {
+      res.json(doc);
+    }
+  });
+});
+
+// Make public a static dir
+app.use(express.static("public"));
 
 // Listen on port 3000
 app.listen(3000, function() {
-  console.log("App running on port 3000!");
+  console.log("App running on port 3000");
 });

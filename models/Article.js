@@ -1,5 +1,8 @@
 // Requiring Mongoose
 const mongoose = require("mongoose");
+// Requiring Mongoose unique validator to avoid duplicate scrape entries
+const uniqueValidator = require('mongoose-unique-validator')
+
 // Schema class
 const Schema = mongoose.Schema;
 
@@ -7,17 +10,24 @@ const Schema = mongoose.Schema;
 var ArticleSchema = new Schema({
   title: {
     type: String,
-    required: true
+    required: true,
+    unique: true
+  },
+  summary: {
+    type: String
   },
   link: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   comment: {
     type: Schema.Types.ObjectId,
     ref: "Comment"
   }
 });
+
+ArticleSchema.plugin(uniqueValidator);
 
 // Creating Article model using the ArticleSchema
 var Article = mongoose.model("Article", ArticleSchema);
