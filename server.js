@@ -27,6 +27,9 @@ app.use(bodyParser.urlencoded({
 mongoose.connect('mongodb://heroku_x8bpf5q8:7957mhqvgnul9f4hmbcrub3cuh@ds127892.mlab.com:27892/heroku_x8bpf5q8');
 var db = mongoose.connection;
 
+// Setting dynamic port for Heroku deployment
+var PORT = process.env.PORT || 3000;
+
 // Using method override for delete routes with a query value
 app.use(methodOverride('_method'));
 
@@ -149,7 +152,7 @@ app.delete('/comments/:id?', function(req, res) {
 // Make public a static dir
 app.use(express.static("public"));
 
-// Listen on port 3000
-app.listen(3000, function() {
-  console.log("App running on port 3000");
+// Listen on port
+app.listen(PORT, function() {
+  console.log(`App running on port ${PORT}`);
 });
