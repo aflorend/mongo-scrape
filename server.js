@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const path = require('path');
+const methodOverride = require('method-override');
 // Used to scrape
 const request = require('request');
 const cheerio = require('cheerio');
@@ -25,6 +26,9 @@ app.use(bodyParser.urlencoded({
 // Configure DB with mongoose
 mongoose.connect('mongodb://localhost/articleScraper');
 var db = mongoose.connection;
+
+// Using method override for delete routes with a query value
+app.use(methodOverride('_method'));
 
 // Show any errors from mongoose
 db.on('error', function(error) {
@@ -129,7 +133,18 @@ app.post('/articles/:id', function(req, res) {
   });
 });
 
-// TODO: Delete route for comments
+app.delete('/comments/:id?', function(req, res) {
+
+  UserComment.findOneAndRemove({ '_id': req.params.id })
+  .exec(function(error, doc) {
+    if (error) {
+      console.log(error);
+    }
+    else {
+      res.send(doc);
+    }
+  });
+});
 
 // Make public a static dir
 app.use(express.static("public"));
