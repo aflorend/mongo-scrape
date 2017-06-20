@@ -52,7 +52,6 @@ app.get('/', function(req, res) {
       // Adding headline, links, summary and saving them as properties of result object
       result.title = $(this).find('.headline').find('a').attr('title');
       result.link = $(this).find('.headline').find('a').attr('href');
-      result.summary = $(this).find('.desc').text();
 
       // Create a new entry using the Article model
       var entry = new Article(result);
@@ -84,6 +83,53 @@ app.get('/articles', function(req, res) {
     }
   });
 });
+
+// finding articles by ID
+app.get('/articles/:id', function(req, res) {
+  console.log(req.params.id);
+  // Finds one article in the database that matches the id of the article being clicked
+  Article.findOne({ '_id': req.params.id })
+  // Populates user comments associated with the id
+  .populate('userComment')
+  // executes
+  .exec(function(error, doc) {
+    if (error) {
+      console.log(error);
+    }
+    // Sends the doc to the browser as a json
+    else {
+      res.json(doc)
+    }
+  });
+});
+
+// Creating a new user comment
+app.post('/articles/:id', function(req, res) {
+    // creates new comment and passes the request body to the entry
+  var newComment = new UserComment(req.body);
+  // saves new comment to the database
+  newComment.save(function(error, doc) {
+    if (error) {
+      console.log(error);
+    }
+    else {
+      // Using the article id to find then update the comment
+      Article.findOneAndUpdate({ '_id': req.params.id }, {$push: { 'userComment': doc._id }})
+      // executes
+      .exec(function(error, doc) {
+        if (error) {
+          console.log(error);
+        }
+        else {
+          // send doc to the browser
+          res.send(doc);
+        }
+      });
+    }
+  });
+});
+
+// TODO: Delete route for comments
 
 // Make public a static dir
 app.use(express.static("public"));

@@ -34,14 +34,22 @@
         height: 200px;
         font-size: 18px;
       }
+      a {
+        color: blue;
+        text-decoration: underline;
+      }
+      a:hover {
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
     <div id="wrapper">
-      <h1>Note Scraper</h1>
-      <h2><i>If you can do this...the homework should be no problem.</i></h2>
+      <h1>Onion.com Scraper</h1>
       <div id="articles"></div>
       <div id="notes"></div>
+      <div id="user-comments">
+      </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="/app.js"></script>

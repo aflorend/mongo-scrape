@@ -21,10 +21,10 @@ var ArticleSchema = new Schema({
     required: true,
     unique: true
   },
-  comment: {
+  userComment: [{
     type: Schema.Types.ObjectId,
-    ref: "Comment"
-  }
+    ref: "UserComment"
+  }]
 });
 
 ArticleSchema.plugin(uniqueValidator);
