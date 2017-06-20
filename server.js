@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 // Configure DB with mongoose
-mongoose.connect('mongodb://localhost/articleScraper');
+mongoose.connect('mongodb://heroku_x8bpf5q8:7957mhqvgnul9f4hmbcrub3cuh@ds127892.mlab.com:27892/heroku_x8bpf5q8');
 var db = mongoose.connection;
 
 // Using method override for delete routes with a query value
